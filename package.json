@@ -1,0 +1,23 @@
+{
+  "name": "backendplacement",
+  "version": "1.0.0",
+  "description": "backend for placement app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pradeepkarthik77/backendplacement.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pradeepkarthik77/backendplacement/issues"
+  },
+  "homepage": "https://github.com/pradeepkarthik77/backendplacement#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^4.13.0"
+  }
+}
