@@ -2,6 +2,14 @@ const express = require('express')
 const app = express()
 const MongoClient = require('mongodb').MongoClient
 
+const cors = require('cors');
+const corsOptions ={
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
+
 const url = "mongodb+srv://placementNcp:Narikootam123@cluster0.xxmqluh.mongodb.net/?retryWrites=true&w=majority"
 
 app.use(express.json())
@@ -13,6 +21,8 @@ MongoClient.connect(url,(err,db) => {
         return;
     }
 
+    console.log("Ready")
+
     var myDb = db.db("placementportal");
 
     const logindata = myDb.collection('user')
@@ -20,6 +30,8 @@ MongoClient.connect(url,(err,db) => {
     const studentsdata = myDb.collection('students')
 
     app.post('/addstudent', (req, res) => {
+
+        console.log("hi")
 
         const newUser = {
             rollno: req.body.rollno,
