@@ -8,7 +8,7 @@ const corsOptions ={
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }
-app.use(cors(corsOptions));
+app.use(cors());
 
 const url = "mongodb+srv://placementNcp:Narikootam123@cluster0.xxmqluh.mongodb.net/?retryWrites=true&w=majority"
 
@@ -43,6 +43,7 @@ MongoClient.connect(url,(err,db) => {
             course: req.body.course,
             status: req.body.status
         }
+        
 
         const loginuser = {
             username: req.body.rollno,
@@ -58,21 +59,27 @@ MongoClient.connect(url,(err,db) => {
             {
                 studentsdata.insertOne(newUser, (err, result) => {
 
-                    logindata.insertOne(loginuser,(error,res) => {
+                    logindata.findOne(query,(err,resultt) => {
 
-                        const objToSend = {
-                            username: res.username,
-                            usertype: res.usertype
+                        if(resultt == null)
+                        {
+                            logindata.insertOne(loginuser,(error,resu) => {
+                                const objToSend = {
+                                    username: loginuser.username,
+                                    usertype: loginuser.usertype,
+                                    reqstatus: 200
+                                    }
+                                    res.send(JSON.stringify(objToSend))
+                            })
                         }
-    
-                        res.status(200).send(JSON.stringify(objToSend))
+                        else{
+                            res.send(JSON.stringify({reqstatus: 404,inda:100}))
+                        }
                     })
-
-                    res.status(400).send()
                    
                 })
             } else {
-                res.status(400).send()
+                res.send(JSON.stringify({reqstatus : 404,souh:200}))
             }
 
         })
