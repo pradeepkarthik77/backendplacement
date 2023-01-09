@@ -29,10 +29,9 @@ MongoClient.connect(url,(err,db) => {
 
     const studentsdata = myDb.collection('students')
 
+    const recruiterdata = myDb.collection('companies')
+
     app.post('/addstudent', (req, res) => {
-
-        console.log("hi")
-
         const newUser = {
             rollno: req.body.rollno,
             name: req.body.name,
@@ -51,13 +50,15 @@ MongoClient.connect(url,(err,db) => {
             usertype: "Student"
         }
 
-        const query = { rollno: req.body.rollno }
+        var query = { rollno: req.body.rollno }
 
         studentsdata.findOne(query, (err, result) => {
 
             if (result == null) 
             {
                 studentsdata.insertOne(newUser, (err, result) => {
+
+                    query = {username: loginuser.username}
 
                     logindata.findOne(query,(err,resultt) => {
 
@@ -73,13 +74,13 @@ MongoClient.connect(url,(err,db) => {
                             })
                         }
                         else{
-                            res.send(JSON.stringify({reqstatus: 404,inda:100}))
+                            res.send(JSON.stringify({reqstatus: 404}))
                         }
                     })
                    
                 })
             } else {
-                res.send(JSON.stringify({reqstatus : 404,souh:200}))
+                res.send(JSON.stringify({reqstatus : 404}))
             }
 
         })
@@ -88,32 +89,208 @@ MongoClient.connect(url,(err,db) => {
 
     })
 
-        app.post('/login', (req, res) => {
+    app.post('/addrecruiter', (req, res) => {
 
-            const query = {
-                username: req.body.username, 
-                password: req.body.password,
-                usertype: req.body.usertype
+        console.log("hi")
+
+        const newrecuiter = {
+            name: req.body.name,
+            username: req.body.username,
+            gst: req.body.gst,
+            drive: req.body.drive,
+            email:  req.body.email,
+            lastDrive: req.body.lastDrive,
+            status: req.body.status
+        }
+
+        const loginuser = {
+            username: req.body.username,
+            password: "amrita",
+            usertype: "Recruiter"
+        }
+
+        var query = { name: req.body.name }
+
+        recruiterdata.findOne(query, (err, result) => {
+
+            if (result == null) 
+            {
+                recruiterdata.insertOne(newrecuiter, (err, result) => {
+
+                    query = {username: loginuser.username}
+
+                    logindata.findOne(query,(err,resultt) => {
+
+                        if(resultt == null)
+                        {
+                            logindata.insertOne(loginuser,(error,resu) => {
+                                const objToSend = {
+                                    username: loginuser.username,
+                                    usertype: loginuser.usertype,
+                                    reqstatus: 200
+                                    }
+                                    res.send(JSON.stringify(objToSend))
+                            })
+                        }
+                        else{
+                            res.send(JSON.stringify({reqstatus: 404}))
+                        }
+                    })
+                   
+                })
+            } else {
+                res.send(JSON.stringify({reqstatus : 404}))
             }
 
-            collection.findOne(query, (err, result) => {
-
-                if (result != null) {
-
-                    const objToSend = {
-                        username: result.username,
-                        usertype: result.usertype
-                    }
-
-                    res.status(200).send(JSON.stringify(objToSend))
-
-                } else {
-                    res.status(404).send()
-                }
-
-            })
-            console.log("received login")
         })
+
+        console.log("received request for adding user")
+
+    })
+    
+    app.post('/getrecruiter', (req, res) => {
+
+        console.log("hi recived request for getrecruiter")
+
+        var returnval = {items: [],reqcode: 200}
+
+
+        recruiterdata.find({}).toArray(function(err,items) {
+            if(err) console.log(err)
+            
+            if(items.length != 0)
+            {
+                returnval.items = items
+                res.send(JSON.stringify(returnval))
+            }
+            else
+            {
+                returnval.reqcode = 400
+                res.send(JSON.stringify(returnval))
+            }
+
+            //console.log(items)
+        })
+
+    })
+
+    app.post('/getstudent', (req, res) => {
+
+        console.log("hi recived request for getstudent")
+
+        var returnval = {items: [],reqcode: 200}
+
+
+        studentsdata.find({}).toArray(function(err,items) {
+            if(err) console.log(err)
+            
+            if(items.length != 0)
+            {
+                returnval.items = items
+                res.send(JSON.stringify(returnval))
+            }
+            else
+            {
+                returnval.reqcode = 400
+                res.send(JSON.stringify(returnval))
+            }
+        })
+
+    })
+
+    app.post("/deletecompany", (req,res) => {
+        console.log("Received a request to delete a company")
+
+        userdetail = {
+            username: req.body.username
+        }
+
+        recruiterdata.deleteOne(userdetail, (err,obj) => {
+            if(err){
+                res.send(JSON.stringify({reqcode: 404}))
+                console.log(err)
+            }
+            res.send(JSON.stringify({reqcode: 200}))
+        })
+
+    })
+
+    app.post("/deletestudent", (req,res) => {
+        console.log("Received a request to delete a student")
+
+        userdetail = {
+            rollno: req.body.rollno
+        }
+
+        studentsdata.deleteOne(userdetail, (err,obj) => {
+            if(err){
+                res.send(JSON.stringify({reqcode: 404}))
+                console.log(err)
+            }
+            res.send(JSON.stringify({reqcode: 200}))
+        })
+
+    })
+
+    app.post("/updatecompany", (req,res) => {
+        console.log("Received a request to update a company")
+
+        userdetail = {
+            username: req.body.username
+        }
+
+        updateduser = {
+            name: req.body.name,
+            username: req.body.username,
+            gst: req.body.gst,
+            drive: req.body.drive,
+            email: req.body.email,
+            lastDrive: req.body.lastDrive,
+            status: req.body.status
+        }
+
+        var newvalues = {$set : updateduser}
+
+        recruiterdata.updateOne(userdetail,newvalues, (err,obj) => {
+            if(err){
+                res.send(JSON.stringify({reqcode: 404}))
+                console.log(err)
+            }
+            res.send(JSON.stringify({reqcode: 200}))
+        })
+
+    })
+
+    app.post("/updatestudent", (req,res) => {
+        console.log("Received a request to update a student")
+
+        userdetail = {
+            rollno: req.body.rollno
+        }
+
+        updateduser = {
+            name: req.body.name,
+            rollno: req.body.rollno,
+            dob: req.body.dob,
+            email: req.body.email,
+            mobile: req.body.mobile,
+            cgpa: req.body.cgpa,
+            course: req.body.course,
+            status: req.body.status
+          }
+
+        var newvalues = {$set : updateduser}
+
+        studentsdata.updateOne(userdetail,newvalues, (err,obj) => {
+            if(err){
+                res.send(JSON.stringify({reqcode: 404}))
+                console.log(err)
+            }
+            res.send(JSON.stringify({reqcode: 200}))
+        })
+
+    })
+
 
 })
 
