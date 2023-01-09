@@ -101,8 +101,7 @@ MongoClient.connect(url,(err,db) => {
 
                     query = {username: loginuser.username}
 
-                    logindata.findOne(query,(err,resultt) => {
-
+                    logindata.findOne(query,(err,resultt) => { //
                         if(resultt == null)
                         {
                             logindata.insertOne(loginuser,(error,resu) => {
