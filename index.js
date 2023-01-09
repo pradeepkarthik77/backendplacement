@@ -444,7 +444,6 @@ MongoClient.connect(url,(err,db) => {
 
         var returnval = {items: [],reqcode: 200}
 
-
         drivedata.find({}).toArray(function(err,items) {
             if(err) console.log(err)
             
@@ -466,6 +465,43 @@ MongoClient.connect(url,(err,db) => {
                     userdata.cgpa = items[i].mincgpa,
                     userdata.course = "B.tech"
                     userdata.status = "Open"
+                    array.push(userdata)
+                }
+
+                returnval.items = array
+                res.send(JSON.stringify(returnval))
+            }
+            else
+            {
+                returnval.reqcode = 400
+                res.send(JSON.stringify(returnval))
+            }
+        })
+
+    })
+
+    app.post('/gethomedrive', (req, res) => {
+
+        console.log("hi recived request for get home drive")
+
+        var returnval = {items: [],reqcode: 200}
+
+        drivedata.find({}).toArray(function(err,items) {
+            if(err) console.log(err)
+            
+            if(items.length != 0)
+            {
+                var userdata = {}
+
+                let array = []
+
+                for(let i =0;i<items.length;i++)
+                {
+                    //console.log(item)
+                    userdata = {}
+                    userdata.name = items[i].company_name
+                    userdata.designation = items[i].jobDesignation
+                    userdata.description = items[i].jobDescription
                     array.push(userdata)
                 }
 
