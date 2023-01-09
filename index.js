@@ -31,8 +31,49 @@ MongoClient.connect(url,(err,db) => {
 
     const recruiterdata = myDb.collection('companies')
 
+    const drivedata = myDb.collection('drives')
+
+    app.post('/login',(req,res)  => {
+
+        let objtosend = {
+            reqcode: 200,
+            username: "",
+            usertype: ""
+        }
+
+
+        const loguser = {
+            username: req.body.username,
+            password: req.body.password
+        }
+
+        logindata.findOne(loguser, (err,result) => {
+            if(err)
+            {
+                objtosend.reqcode = 404
+                res.send(JSON.stringify(objtosend))
+            }
+            else
+            {
+                if(result !=null)
+                {
+                objtosend.username  = loguser.username
+                objtosend.usertype =  result.usertype
+                res.send(JSON.stringify(objtosend))
+                }
+                else
+                {
+                    objtosend.reqcode = 404
+                    res.send(JSON.stringify(objtosend))
+                }
+            }
+        })
+
+    })
+
     app.post('/addstudent', (req, res) => {
         const newUser = {
+            
             rollno: req.body.rollno,
             name: req.body.name,
             dob: req.body.dob,
@@ -288,6 +329,40 @@ MongoClient.connect(url,(err,db) => {
             }
             res.send(JSON.stringify({reqcode: 200}))
         })
+
+    })
+
+    app.post("/adddrive", (req,res) => {
+        console.log("Received a request to add a drive")
+
+        objToSend = {reqcode: 200}
+
+        let newdrive = {
+            jobDesignation: req.body.jobDesignation,
+            tenthPercentage: req.body.tenthPercentage,
+            jobDescription: req.body.jobDescription,
+            twlethPercentage: req.body.twlethPercentage,
+            course: req.body.course,
+            deptSelected: req.body.deptSelected,
+            mincgpa: req.body.mincgpa,
+            events: req.body.events,
+            salary: req.body.salary,
+            bondDetails: req.body.bondDetails,
+            addReq: req.body.addReq,
+            addDes: req.body.addDes,
+            company_name: req.body.company_name
+          };
+        
+          drivedata.insertOne(newdrive,(error,resu) => {
+            if(error)
+            {
+                objToSend.reqcode = 404
+            res.send(JSON.stringify(objToSend))
+            }
+            else
+            res.send(JSON.stringify(objToSend))
+        })
+
 
     })
 
