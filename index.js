@@ -517,6 +517,28 @@ MongoClient.connect(url,(err,db) => {
 
     })
 
+    app.post('/getsingledrive', (req, res) => {
+
+        console.log("hi recived request for get single drive")
+
+        var returnval = {items: [],reqcode: 200}
+
+        drivedata.findOne({})(function(err,items) {
+            if(err) 
+            {
+                console.log(err)
+                returnval.reqcode = 404
+                res.send(JSON.stringify(returnval))
+            }
+            else{
+                returnval.items = items
+                res.send(JSON.stringify(returnval))
+            }
+            
+        })
+
+    })
+
 
 })
 
