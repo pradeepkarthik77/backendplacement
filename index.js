@@ -450,13 +450,14 @@ MongoClient.connect(url,(err,db) => {
             
             if(items.length != 0)
             {
-                let userdata = {}
+                var userdata = {}
 
                 let array = []
 
                 for(let i =0;i<items.length;i++)
                 {
                     //console.log(item)
+                    userdata = {}
                     userdata.name = items[i].company_name
                     userdata.open = items[i].openingDate
                     userdata.close = items[i].closingDate
