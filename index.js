@@ -41,7 +41,6 @@ MongoClient.connect(url,(err,db) => {
             usertype: ""
         }
 
-
         const loguser = {
             username: req.body.username,
             password: req.body.password
@@ -238,6 +237,31 @@ MongoClient.connect(url,(err,db) => {
 
     })
 
+    app.post('/getsinglestudent', (req, res) => {
+
+        console.log("hi recived request for single getstudent")
+
+        var returnval = {items: [],reqcode: 200}
+
+        query = {
+            rollno: req.body.username
+        }
+
+        studentsdata.findOne(query, function(err,items) {
+            
+            if(err)
+            {
+                returnval.reqcode = 400
+                res.send(JSON.stringify(returnval))
+            }
+            else{
+                returnval.items = items
+                res.send(JSON.stringify(returnval))
+            }
+        })
+
+    })
+
     app.post("/deletecompany", (req,res) => {
         console.log("Received a request to delete a company")
 
@@ -349,7 +373,9 @@ MongoClient.connect(url,(err,db) => {
             bondDetails: req.body.bondDetails,
             addReq: req.body.addReq,
             addDes: req.body.addDes,
-            company_name: req.body.company_name
+            company_name: req.body.company_name,
+            closingDate: req.body.closingDate,
+            openingDate: req.body.openingDate,
           };
         
           drivedata.insertOne(newdrive,(error,resu) => {
@@ -361,7 +387,96 @@ MongoClient.connect(url,(err,db) => {
             else
             res.send(JSON.stringify(objToSend))
         })
+    })
 
+    app.post("/recruiterpassword", (req,res) => {
+        console.log("Received a request to update a recruiter password")
+
+        userdetail = {
+            username: req.body.username,
+            newpassword: req.body.newpassword
+        }
+
+        values = {password: userdetail.newpassword}
+
+        var newvalues = {$set : values}
+
+        let query = {username: userdetail.username}
+
+        logindata.updateOne(query,newvalues, (err,obj) => {
+            if(err){
+                res.send(JSON.stringify({reqcode: 404}))
+                console.log(err)
+            }
+            else
+            res.send(JSON.stringify({reqcode: 200}))
+        })
+    })
+
+    app.post("/adminpassword", (req,res) => {
+        console.log("Received a request to update a recruiter password")
+
+        userdetail = {
+            username: req.body.username,
+            newpassword: req.body.newpassword
+        }
+
+        values = {password: userdetail.newpassword}
+
+        var newvalues = {$set : values}
+
+        let query = {username: userdetail.username}
+
+        logindata.updateOne(query,newvalues, (err,obj) => {
+            if(err){
+                res.send(JSON.stringify({reqcode: 404}))
+                console.log(err)
+            }
+            else
+            res.send(JSON.stringify({reqcode: 200}))
+        })
+    })
+
+
+    app.post('/getdrive', (req, res) => {
+
+        console.log("hi recived request for getdrive")
+
+        var returnval = {items: [],reqcode: 200}
+
+
+        drivedata.find({}).toArray(function(err,items) {
+            if(err) console.log(err)
+            
+            if(items.length != 0)
+            {
+                let userdata = {}
+
+                let array = []
+
+                for(let i =0;i<items.length;i++)
+                {
+                    //console.log(item)
+                    userdata.name = items[i].company_name
+                    userdata.open = items[i].openingDate
+                    userdata.close = items[i].closingDate
+                    userdata.designation = items[i].jobDesignation
+                    userdata.regStud = "180",
+                    userdata.cgpa = items[i].mincgpa,
+                    userdata.course = "B.tech"
+                    userdata.status = "Open"
+                    array.push(userdata)
+                }
+
+                returnval.items = array
+                res.send(JSON.stringify(returnval))
+            }
+            else
+            {
+                returnval.reqcode = 400
+                res.send(JSON.stringify(returnval))
+            }
+        })
 
     })
 
