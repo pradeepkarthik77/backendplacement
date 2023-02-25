@@ -46,6 +46,8 @@ MongoClient.connect(url,(err,db) => {
             password: req.body.password
         }
 
+        console.log("Received login")
+
         logindata.findOne(loguser, (err,result) => {
             if(err)
             {
