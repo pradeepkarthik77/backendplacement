@@ -10,7 +10,7 @@ const corsOptions ={
 }
 app.use(cors());
 
-const url = "mongodb+srv://placementNcp:Narikootam123@cluster0.xxmqluh.mongodb.net/?retryWrites=true&w=majority"
+const url = "<mongodb_url>"
 
 app.use(express.json())
 
